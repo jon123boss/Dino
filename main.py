@@ -14,14 +14,15 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Dinosaur Jump Game")
 
 clock = pygame.time.Clock()
-FPS = 30
+FPS = 60
 
 dino_width = 50
 dino_height = 50
 dino_x = 50
 dino_y = SCREEN_HEIGHT - dino_height - 50
 dino_jump = False
-jump_height = 10
+jump_velocity = 15
+gravity = 1
 dino_vel_y = 0
 
 ground_rect = pygame.Rect(0, SCREEN_HEIGHT - 50, SCREEN_WIDTH, 50)
@@ -41,11 +42,11 @@ while running:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE and not dino_jump:
                 dino_jump = True
-                dino_vel_y = -jump_height
+                dino_vel_y = -jump_velocity
 
     if dino_jump:
         dino_y += dino_vel_y
-        dino_vel_y += 1
+        dino_vel_y += gravity
 
         if dino_y >= SCREEN_HEIGHT - dino_height - 50:
             dino_y = SCREEN_HEIGHT - dino_height - 50
