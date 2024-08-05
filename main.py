@@ -10,6 +10,8 @@ SCREEN_HEIGHT = 400
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GROUND_COLOR = (83, 83, 83)
+DINO_COLOR = (0, 153, 76)
+CACTUS_COLORS = [(255, 0, 0), (0, 0, 255), (255, 165, 0)]
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Dinosaur Jump Game")
@@ -28,25 +30,32 @@ dino_vel_y = 0
 
 ground_rect = pygame.Rect(0, SCREEN_HEIGHT - 50, SCREEN_WIDTH, 50)
 
-obstacle_width = 20
-obstacle_height = 40
 obstacle_min_gap = 200
 obstacle_max_gap = 400
 obstacle_speed = 5
 obstacle_list = []
 
 class Obstacle:
-    def __init__(self, x):
+    def __init__(self, x, obstacle_type):
         self.x = x
-        self.y = SCREEN_HEIGHT - obstacle_height - 50
-        self.width = obstacle_width
-        self.height = obstacle_height
+        self.obstacle_type = obstacle_type
+        self.color = CACTUS_COLORS[random.randint(0, len(CACTUS_COLORS) - 1)]
+        if obstacle_type == 1:
+            self.width = 20
+            self.height = 40
+        elif obstacle_type == 2:
+            self.width = 30
+            self.height = 30
+        elif obstacle_type == 3:
+            self.width = 15
+            self.height = 50
+        self.y = SCREEN_HEIGHT - self.height - 50
 
     def move(self):
         self.x -= obstacle_speed
 
     def draw(self):
-        pygame.draw.rect(screen, BLACK, (self.x, self.y, self.width, self.height))
+        pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
 
     def off_screen(self):
         return self.x < -self.width
@@ -55,7 +64,7 @@ def draw_ground():
     pygame.draw.rect(screen, GROUND_COLOR, ground_rect)
 
 def draw_dinosaur(x, y):
-    pygame.draw.rect(screen, BLACK, (x, y, dino_width, dino_height))
+    pygame.draw.rect(screen, DINO_COLOR, (x, y, dino_width, dino_height))
 
 def check_collision(dino_rect, obstacle_rect):
     return dino_rect.colliderect(obstacle_rect)
@@ -82,7 +91,8 @@ while running:
             dino_vel_y = 0
 
     if obstacle_timer == 0:
-        obstacle_list.append(Obstacle(SCREEN_WIDTH))
+        obstacle_type = random.randint(1, 3)
+        obstacle_list.append(Obstacle(SCREEN_WIDTH, obstacle_type))
         obstacle_timer = random.randint(obstacle_min_gap, obstacle_max_gap)
     else:
         obstacle_timer -= 1
