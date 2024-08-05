@@ -69,8 +69,16 @@ def draw_dinosaur(x, y):
 def check_collision(dino_rect, obstacle_rect):
     return dino_rect.colliderect(obstacle_rect)
 
+def draw_text(text, font, color, x, y):
+    text_surface = font.render(text, True, color)
+    text_rect = text_surface.get_rect()
+    text_rect.midtop = (x, y)
+    screen.blit(text_surface, text_rect)
+
 running = True
 obstacle_timer = 0
+game_over = False
+
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -80,6 +88,14 @@ while running:
             if event.key == pygame.K_SPACE and not dino_jump:
                 dino_jump = True
                 dino_vel_y = -jump_velocity
+            if event.key == pygame.K_r and game_over:
+
+                dino_y = SCREEN_HEIGHT - dino_height - 50
+                dino_jump = False
+                dino_vel_y = 0
+                obstacle_list.clear()
+                obstacle_timer = 0
+                game_over = False
 
     if dino_jump:
         dino_y += dino_vel_y
@@ -106,13 +122,20 @@ while running:
     for obstacle in obstacle_list:
         obstacle_rect = pygame.Rect(obstacle.x, obstacle.y, obstacle.width, obstacle.height)
         if check_collision(dino_rect, obstacle_rect):
-            running = False
+            game_over = True
+            break
 
     screen.fill(WHITE)
     draw_ground()
     draw_dinosaur(dino_x, dino_y)
     for obstacle in obstacle_list:
         obstacle.draw()
+
+    if game_over:
+
+        font = pygame.font.Font(None, 36)
+        draw_text("Game Over", font, BLACK, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+        draw_text("Press 'r' to restart", font, BLACK, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 50)
 
     pygame.display.flip()
 
